@@ -14,6 +14,9 @@
     <v-btn v-if="!isLoggedIn" text v-bind:to="{ name: 'sign-in' }">
       Sign In
     </v-btn>
+    <v-btn v-if='isLoggedIn' text v-bind:to="{ name: 'reset-password' }">
+      Reset Password
+    </v-btn>
     <v-btn text v-bind:to="{ name: 'about-us' }">About Us</v-btn>
 
     <v-menu v-if="isLoggedIn" offset-y>

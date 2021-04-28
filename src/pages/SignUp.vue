@@ -1,4 +1,4 @@
-<template>
+  <template>
   <v-container>
     <div>
       <h4 class="display-1">Sign Up</h4>

@@ -2,16 +2,16 @@
 const knex = require("knex")({
   client: "pg",
   connection: {
-    host: "localhost", // PostgreSQL server
-    user: "tom", // Your user name
-    password: "", // Your password
-    database: "cos-243-ui-spa", // Your database name
+    host: "faraday.cse.taylor.edu",
+    user: "jackson_miller",
+    password: "xopijuti",
+    database: "jackson_miller"
   },
 });
 
 // Objection
-const objection = require("objection");
-objection.Model.knex(knex);
+const { Model } = require("objection");
+Model.knex(knex);
 
 // Models
 const Account = require("./models/Account");
@@ -162,6 +162,57 @@ async function init() {
         }
       },
     },
+
+    {
+      method: "PATCH",
+      path: "/accounts",
+      config: {
+        description: "Reset your password",
+        validate: {
+          payload: Joi.object({
+            email: Joi.string().email().required(),
+            currentPassword: Joi.string().required(),
+            newPassword: Joi.string().required(),
+            verifyPassword: Joi.string().required()
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const existingAccount = await Account.query()
+          .where("email", request.payload.email)
+          .first();
+        if (!existingAccount) {
+          return {
+            ok: false,
+            msge: `Account with email '${request.payload.email}' doesn't exist`,
+          };
+        }
+
+        if(request.payload.currentPassword !== existingAccount.password){
+          return {
+            ok: false,
+            msge: `The current password entered does not match the current registered password`
+          }
+        }
+
+        const accountNewPass = await Account.query().patch({
+          email: request.payload.email,
+          password: request.payload.newPassword,
+        });
+
+        if (newAccount) {
+          return {
+            ok: true,
+            msge: `Created account '${request.payload.email}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't create account with email '${request.payload.email}'`,
+          };
+        }
+      },
+    }
   ]);
 
   // Start the server.
